@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Video Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Generate Video from Text</h1>
+        <textarea id="prompt" placeholder="Enter your prompt..."></textarea>
+        <button id="generate-btn">Generate Video</button>
+        <div id="loading" style="display: none;">Generating Video...</div>
+        <video id="video-preview" controls style="display: none;"></video>
+    </div>
+
+    <script>
+        const generateBtn = document.getElementById("generate-btn");
+        const promptInput = document.getElementById("prompt");
+        const loadingText = document.getElementById("loading");
+        const videoPreview = document.getElementById("video-preview");
+
+        generateBtn.addEventListener("click", () => {
+            const prompt = promptInput.value;
+            loadingText.style.display = "block";
+
+            fetch("http://localhost:5000/generate-video", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ prompt }),
+            })
+            .then((response) => response.blob())
+            .then((blob) => {
+                const url = URL.createObjectURL(blob);
+                videoPreview.src = url;
+                videoPreview.style.display = "block";
+                loadingText.style.display = "none";
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                loadingText.style.display = "none";
+            });
+        });
+    </script>
+</body>
+</html>
